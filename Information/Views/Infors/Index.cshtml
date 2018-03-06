@@ -1,0 +1,72 @@
+﻿@model IEnumerable<Information.Models.Infor>
+
+@{
+    ViewBag.Title = "公告";
+}
+
+<h2>@ViewBag.Title</h2>
+
+<p>
+
+    @if (User.IsInRole("admin"))
+    {@Html.ActionLink("Create New", "Create")}
+</p>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Title)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.publisher)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.ReleaseTime)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.content)
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Title)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.publisher)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ReleaseTime)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.content)
+            </td>
+            <td>
+
+
+               
+                @if (User.IsInRole("admin"))
+                {
+                    @Html.ActionLink("Edit", "Edit", new { id = item.ID }) @: |
+                    @Html.ActionLink("Delete", "Delete", new { id = item.ID })@: |
+
+                }
+                @Html.ActionLink("Details", "Details", new { id = item.ID })
+
+
+
+            </td>
+        </tr>
+
+    }
+
+</table>
+
+
+@*@if (ViewBag.guest == "1") {@Html.ActionLink("登出", "Logout", "Home")}*@
+
+@section Scripts{
+    @Scripts.Render("~/bundles/jqueryval");
+} 
