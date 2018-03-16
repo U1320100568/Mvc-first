@@ -9,15 +9,15 @@
 
 <p>
     @Html.ActionLink("Create New", "Create")
+    @Html.ActionLink("Download", "Export", "Excel", new { id = 1 }, new { @class = "pull-right" })
 </p>
+
 <table class="table">
     <tr>
         <th>
             @Html.DisplayNameFor(model => model.ID)
         </th>
-        <th>
-            @Html.DisplayNameFor(model => model.PowerID)
-        </th>
+        
         <th>
             @Html.DisplayNameFor(model => model.Password)
         </th>
@@ -33,9 +33,7 @@
             <td>
                 @Html.DisplayFor(modelItem => item.ID)
             </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.PowerID)
-            </td>
+            
             <td>
                 @Html.DisplayFor(modelItem => item.Password)
             </td>

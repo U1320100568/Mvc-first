@@ -4,28 +4,30 @@ using System.Data.Entity;
 using System.Linq;
 using System.Web;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using Information.Service;
 
 namespace Information.Models
 {
-    public class Member
+    public class Member 
     {
+        [Key]
         public int ID { get; set; }
-        public int PowerID { get; set; }
+        //public int PowerID { get; set; }
 
         [Required]
+        [StringLength(12)]
+        [DataType(DataType.Password)]
         public string Password { get; set; }
+
         [Required]
+        [StringLength(20)]
+        [Column(TypeName = "varchar")]
         public string Name { get; set; }
 
-
+        
     }
-    public static class User
-    {
-        public static int UserID{ get; set; }
-    }
-
-    public class MemberDbContext : DbContext
-    {
-        public DbSet<Member> Members { get; set; }
-    }
+    
+    
+    
 }

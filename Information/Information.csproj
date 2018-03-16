@@ -52,10 +52,25 @@
     <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
+    <Reference Include="ICSharpCode.SharpZipLib, Version=0.86.0.518, Culture=neutral, PublicKeyToken=1b03e6acf1164f73, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharpZipLib.0.86.0\lib\20\ICSharpCode.SharpZipLib.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CodeDom.Providers.DotNetCompilerPlatform, Version=1.0.7.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.7\lib\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="NPOI, Version=2.3.0.0, Culture=neutral, PublicKeyToken=0df73ec7942b34e1, processorArchitecture=MSIL">
+      <HintPath>..\packages\NPOI.2.3.0\lib\net40\NPOI.dll</HintPath>
+    </Reference>
+    <Reference Include="NPOI.OOXML, Version=2.3.0.0, Culture=neutral, PublicKeyToken=0df73ec7942b34e1, processorArchitecture=MSIL">
+      <HintPath>..\packages\NPOI.2.3.0\lib\net40\NPOI.OOXML.dll</HintPath>
+    </Reference>
+    <Reference Include="NPOI.OpenXml4Net, Version=2.3.0.0, Culture=neutral, PublicKeyToken=0df73ec7942b34e1, processorArchitecture=MSIL">
+      <HintPath>..\packages\NPOI.2.3.0\lib\net40\NPOI.OpenXml4Net.dll</HintPath>
+    </Reference>
+    <Reference Include="NPOI.OpenXmlFormats, Version=2.3.0.0, Culture=neutral, PublicKeyToken=0df73ec7942b34e1, processorArchitecture=MSIL">
+      <HintPath>..\packages\NPOI.2.3.0\lib\net40\NPOI.OpenXmlFormats.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
@@ -148,26 +163,51 @@
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
-    <Compile Include="Controllers\GlobalVariable.cs" />
+    <Compile Include="Controllers\ExcelController.cs" />
+    <Compile Include="Controllers\FeaturesController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\InforsController.cs" />
+    <Compile Include="Controllers\LogRecordsController.cs" />
     <Compile Include="Controllers\MembersController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Helpers\WebSiteHelper.cs" />
-    <Compile Include="Migrations\201803031413536_Initial.cs" />
-    <Compile Include="Migrations\201803031413536_Initial.Designer.cs">
-      <DependentUpon>201803031413536_Initial.cs</DependentUpon>
+    <Compile Include="Infrastructure\UserAuthorize.cs" />
+    <Compile Include="Migrations\201803070829476_Initial.cs" />
+    <Compile Include="Migrations\201803070829476_Initial.Designer.cs">
+      <DependentUpon>201803070829476_Initial.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201803041236291_DataAnnotations.cs" />
-    <Compile Include="Migrations\201803041236291_DataAnnotations.Designer.cs">
-      <DependentUpon>201803041236291_DataAnnotations.cs</DependentUpon>
+    <Compile Include="Migrations\201803080529035_DataAnnotation.cs" />
+    <Compile Include="Migrations\201803080529035_DataAnnotation.Designer.cs">
+      <DependentUpon>201803080529035_DataAnnotation.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201803080710526_LogRecord.cs" />
+    <Compile Include="Migrations\201803080710526_LogRecord.Designer.cs">
+      <DependentUpon>201803080710526_LogRecord.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201803090348014_AddFeatureTable.cs" />
+    <Compile Include="Migrations\201803090348014_AddFeatureTable.Designer.cs">
+      <DependentUpon>201803090348014_AddFeatureTable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201803090614110_FeatureModified.cs" />
+    <Compile Include="Migrations\201803090614110_FeatureModified.Designer.cs">
+      <DependentUpon>201803090614110_FeatureModified.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201803130613338_DataAnnotation1.cs" />
+    <Compile Include="Migrations\201803130613338_DataAnnotation1.Designer.cs">
+      <DependentUpon>201803130613338_DataAnnotation1.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
+    <Compile Include="Models\AppDbContext.cs" />
+    <Compile Include="Models\Feature.cs" />
     <Compile Include="Models\Information.cs" />
+    <Compile Include="Models\LogRecord.cs" />
     <Compile Include="Models\Member.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Service\AccountService.cs" />
+    <Compile Include="Service\CrudRepository.cs" />
+    <Compile Include="Service\ExportService.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap.css" />
@@ -218,6 +258,12 @@
     <Content Include="Views\Members\Details.cshtml" />
     <Content Include="Views\Members\Edit.cshtml" />
     <Content Include="Views\Members\Index.cshtml" />
+    <Content Include="Views\LogRecords\Delete.cshtml" />
+    <Content Include="Views\LogRecords\Details.cshtml" />
+    <Content Include="Views\LogRecords\Index.cshtml" />
+    <Content Include="Views\Features\Edit.cshtml" />
+    <Content Include="Views\Features\Index.cshtml" />
+    <Content Include="Views\Shared\_LoginPartial.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -236,11 +282,23 @@
     <Content Include="Scripts\jquery-1.10.2.min.map" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201803031413536_Initial.resx">
-      <DependentUpon>201803031413536_Initial.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201803070829476_Initial.resx">
+      <DependentUpon>201803070829476_Initial.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201803041236291_DataAnnotations.resx">
-      <DependentUpon>201803041236291_DataAnnotations.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201803080529035_DataAnnotation.resx">
+      <DependentUpon>201803080529035_DataAnnotation.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201803080710526_LogRecord.resx">
+      <DependentUpon>201803080710526_LogRecord.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201803090348014_AddFeatureTable.resx">
+      <DependentUpon>201803090348014_AddFeatureTable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201803090614110_FeatureModified.resx">
+      <DependentUpon>201803090614110_FeatureModified.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201803130613338_DataAnnotation1.resx">
+      <DependentUpon>201803130613338_DataAnnotation1.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

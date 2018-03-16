@@ -1,5 +1,5 @@
-﻿@model Information.Models.Member
-
+﻿@model Information.Models.LogRecord
+@using Information.Helpers
 @{
     ViewBag.Title = "Delete";
 }
@@ -8,27 +8,33 @@
 
 <h3>Are you sure you want to delete this?</h3>
 <div>
-    <h4>Member</h4>
+    <h4>LogRecord</h4>
     <hr />
     <dl class="dl-horizontal">
-
-
-
-
         <dt>
-            @Html.DisplayNameFor(model => model.Name)
+            @Html.DisplayNameFor(model => model.MemberId)
         </dt>
 
         <dd>
-            @Html.DisplayFor(model => model.Name)
+            @WebSiteHelper.GetUserNameById(Model.MemberId)
         </dd>
+
         <dt>
-            @Html.DisplayNameFor(model => model.Password)
+            @Html.DisplayNameFor(model => model.LoginTime)
         </dt>
 
         <dd>
-            @Html.DisplayFor(model => model.Password)
+            @Html.DisplayFor(model => model.LoginTime)
         </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.LogoutTime)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.LogoutTime)
+        </dd>
+
     </dl>
 
     @using (Html.BeginForm()) {

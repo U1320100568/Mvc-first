@@ -6,31 +6,32 @@ using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
+using Information.Infrastructure;
 using Information.Models;
+using Information.Service;
 
 namespace Information.Controllers
 {
+    [UserAuthorize]
     public class InforsController : Controller
     {
-        private InforDbContext db = new InforDbContext();
+        
+        private CrudRepository<Infor> inforRepo = new CrudRepository<Infor>();
 
         // GET: Infors
+        [UserAuthorize]
         public ActionResult Index()
         {
-            //if (GlobalVariable.UserID == 1) { ViewBag.admin = "1";  }
-            //if (GlobalVariable.UserID != 0) { ViewBag.guest = "1"; }
-
-            return View(db.Informations.ToList());
+            
+            return View(inforRepo.GetAll().ToList());
         }
 
         // GET: Infors/Details/5
+        [UserAuthorize]
         public ActionResult Details(int? id)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Infor infor = db.Informations.Find(id);
+            
+            Infor infor = inforRepo.Get(i => i.ID == id);
             if (infor == null)
             {
                 return HttpNotFound();
@@ -39,6 +40,7 @@ namespace Information.Controllers
         }
 
         // GET: Infors/Create
+        [UserAuthorize]
         public ActionResult Create()
         {
             return View();
@@ -49,12 +51,13 @@ namespace Information.Controllers
         // 詳細資訊，請參閱 https://go.microsoft.com/fwlink/?LinkId=317598。
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "ID,Title,publisher,ReleaseTime,content")] Infor infor)
+        [UserAuthorize]
+        public ActionResult Create([Bind(Include = "ID,Title,Publisher,ReleaseTime,Content")] Infor infor)
         {
             if (ModelState.IsValid)
             {
-                db.Informations.Add(infor);
-                db.SaveChanges();
+
+                inforRepo.Create(infor);
                 return RedirectToAction("Index");
             }
 
@@ -62,13 +65,11 @@ namespace Information.Controllers
         }
 
         // GET: Infors/Edit/5
+        [UserAuthorize]
         public ActionResult Edit(int? id)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Infor infor = db.Informations.Find(id);
+            
+            Infor infor = inforRepo.Get(i => i.ID == id);
             if (infor == null)
             {
                 return HttpNotFound();
@@ -81,25 +82,24 @@ namespace Information.Controllers
         // 詳細資訊，請參閱 https://go.microsoft.com/fwlink/?LinkId=317598。
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "ID,Title,publisher,ReleaseTime,content")] Infor infor)
+        [UserAuthorize]
+        public ActionResult Edit([Bind(Include = "ID,Title,Publisher,ReleaseTime,Content")] Infor infor)
         {
             if (ModelState.IsValid)
             {
-                db.Entry(infor).State = EntityState.Modified;
-                db.SaveChanges();
+
+                inforRepo.Update(infor);
                 return RedirectToAction("Index");
             }
             return View(infor);
         }
 
         // GET: Infors/Delete/5
+        [UserAuthorize]
         public ActionResult Delete(int? id)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Infor infor = db.Informations.Find(id);
+            
+            Infor infor = inforRepo.Get(i => i.ID == id);
             if (infor == null)
             {
                 return HttpNotFound();
@@ -110,11 +110,12 @@ namespace Information.Controllers
         // POST: Infors/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [UserAuthorize]
         public ActionResult DeleteConfirmed(int id)
         {
-            Infor infor = db.Informations.Find(id);
-            db.Informations.Remove(infor);
-            db.SaveChanges();
+            
+            Infor infor = inforRepo.Get(i => i.ID == id);
+            inforRepo.Delete(infor);
             return RedirectToAction("Index");
         }
 
@@ -122,7 +123,8 @@ namespace Information.Controllers
         {
             if (disposing)
             {
-                db.Dispose();
+                //db.Dispose();
+                inforRepo.Dispose();
             }
             base.Dispose(disposing);
         }

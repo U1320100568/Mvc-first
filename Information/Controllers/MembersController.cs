@@ -6,36 +6,34 @@ using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
+using Information.Infrastructure;
 using Information.Models;
+using Information.Service;
+
 
 namespace Information.Controllers
 {
+    [UserAuthorize]
     public class MembersController : Controller
     {
-        private MemberDbContext db = new MemberDbContext();
+        private CrudRepository<Member> memberRepo= new CrudRepository<Member>();
+        private AccountService accountService = new AccountService();
 
-        
         // GET: Members
+        [UserAuthorize]
         public ActionResult Index()
         {
-
-            //if (GlobalVariable.UserID != 0) {ViewBag.guest = "1"; }
             
-
-            return View(db.Members.ToList());
-            
-           
+            return View(memberRepo.GetAll().ToList());
             
         }
 
         // GET: Members/Details/5
+        [UserAuthorize]
         public ActionResult Details(int? id)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Member member = db.Members.Find(id);
+            
+            Member member = memberRepo.Get(m => m.ID == id);
             if (member == null)
             {
                 return HttpNotFound();
@@ -44,6 +42,7 @@ namespace Information.Controllers
         }
 
         // GET: Members/Create
+        [UserAuthorize]
         public ActionResult Create()
         {
             return View();
@@ -54,12 +53,13 @@ namespace Information.Controllers
         // 詳細資訊，請參閱 https://go.microsoft.com/fwlink/?LinkId=317598。
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [UserAuthorize]
         public ActionResult Create([Bind(Include = "ID,PowerID,Password,Name")] Member member)
         {
             if (ModelState.IsValid)
             {
-                db.Members.Add(member);
-                db.SaveChanges();
+                memberRepo.Create(member);
+                accountService.CreateAccount(member.ID);
                 return RedirectToAction("Index");
             }
 
@@ -67,13 +67,10 @@ namespace Information.Controllers
         }
 
         // GET: Members/Edit/5
+        [UserAuthorize]
         public ActionResult Edit(int? id)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Member member = db.Members.Find(id);
+            Member member = memberRepo.Get(m => m.ID == id);
             if (member == null)
             {
                 return HttpNotFound();
@@ -86,25 +83,22 @@ namespace Information.Controllers
         // 詳細資訊，請參閱 https://go.microsoft.com/fwlink/?LinkId=317598。
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [UserAuthorize]
         public ActionResult Edit([Bind(Include = "ID,PowerID,Password,Name")] Member member)
         {
             if (ModelState.IsValid)
             {
-                db.Entry(member).State = EntityState.Modified;
-                db.SaveChanges();
+                memberRepo.Update(member);
                 return RedirectToAction("Index");
             }
             return View(member);
         }
 
         // GET: Members/Delete/5
+        [UserAuthorize]
         public ActionResult Delete(int? id)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Member member = db.Members.Find(id);
+            Member member = memberRepo.Get(m => m.ID == id);
             if (member == null)
             {
                 return HttpNotFound();
@@ -115,21 +109,28 @@ namespace Information.Controllers
         // POST: Members/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [UserAuthorize]
         public ActionResult DeleteConfirmed(int id)
         {
-            Member member = db.Members.Find(id);
-            db.Members.Remove(member);
-            db.SaveChanges();
+            Member member = memberRepo.Get(m => m.ID == id);
+            FeaturesController featuresController = new FeaturesController();
+            featuresController.Delete(id);
+            memberRepo.Delete(member);
             return RedirectToAction("Index");
         }
 
         protected override void Dispose(bool disposing)
         {
+            /**/
             if (disposing)
             {
-                db.Dispose();
+                //db.Dispose();
+                memberRepo.Dispose();
+
             }
             base.Dispose(disposing);
+            
+           
         }
     }
 }

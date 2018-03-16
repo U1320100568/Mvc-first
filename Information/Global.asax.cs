@@ -14,6 +14,7 @@ namespace Information
     {
         protected void Application_Start()
         {
+            //環境變數初始化
             AreaRegistration.RegisterAllAreas();
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
@@ -25,7 +26,7 @@ namespace Information
             bool hasUser = HttpContext.Current.User != null;
             bool isAuthenticated = hasUser && HttpContext.Current.User.Identity.IsAuthenticated;
             bool isIdentity = isAuthenticated && HttpContext.Current.User.Identity is FormsIdentity;
-
+            
             if (isIdentity)
             {
                 FormsIdentity id = (FormsIdentity)HttpContext.Current.User.Identity;

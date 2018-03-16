@@ -1,4 +1,6 @@
-﻿using Information.Models;
+﻿using Information.Helpers;
+using Information.Models;
+using Information.Service;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +12,8 @@ namespace Information.Controllers
 {
     public class HomeController : Controller
     {
-        MemberDbContext db = new MemberDbContext(); 
+        
+        private AccountService accountService = new AccountService();
         public ActionResult Index()
         {
             return View();
@@ -22,21 +25,13 @@ namespace Information.Controllers
 
             return RedirectToAction("Index","Infors");
         }
-        
+
+        [AllowAnonymous]
         public ActionResult Login()
         {
             ViewBag.Message = "Your Login page.";
             
-            /*
-            switch (GlobalVariable.UserID)//
-            {
-                case 1:
-                    return RedirectToAction("Index","Members");
-                case 0:
-                    return View();
-                
-            }
-            */
+            
             switch (User.Identity.Name)
             {
                 case "admin":
@@ -46,67 +41,68 @@ namespace Information.Controllers
                 default:
                     return RedirectToAction("Index", "Infors");
             }
-
-            
         }
+
         [HttpPost]
-        public ActionResult Login(Member m)
+        [ValidateAntiForgeryToken]
+        [AllowAnonymous]
+        public ActionResult Login([Bind (Include = "Name,Password")]Member m)
         {
-            if ((!String.IsNullOrEmpty(m.Name)) && (!String.IsNullOrEmpty(m.Password)))
+            //驗證帳密
+            var member = accountService.Login(m);
+            if (member != null)
             {
-
-                if (db.Members.FirstOrDefault(s => s.Name == m.Name)==null)
-                {
-                    ViewBag.errorMsg = "account not found"; //判斷有無此帳號
+                //Authenticaion
+                Response.Cookies.Add(WebSiteHelper.Authentication(member));
+                //Authenticaion
+                
+               
+                if (!member.Name.Equals("admin"))
+                {   
+                  
+                    string controllerName = WebSiteHelper.GetFeature(member.Name).GetFirstAccessFeature();
+                    if(controllerName != null)
+                    {
+                        return RedirectToAction("Index", controllerName);
+                    }
+                    else
+                    {
+                        return RedirectToAction("Logout", "Home");
+                    }
                     
-                    return View(); 
                 }
-                var member = db.Members.FirstOrDefault(s => s.Name == m.Name );
-                if (!member.Password.Equals(m.Password))
-                {
-                    ViewBag.errorMsg = "wrong password";  //判斷密碼
-                    return View();
-                }
-                //Authenticaion
-                var now = DateTime.Now;
-                string userdata=member.Name;
-                var ticket = new FormsAuthenticationTicket(
-                        version: 1,
-                        name: m.Name,
-                        issueDate: now,
-                        expiration: now.AddMinutes(30),
-                        isPersistent:false,
-                        userData:userdata,
-                        cookiePath:FormsAuthentication.FormsCookiePath
-                    );
-                var encryptedTicket = FormsAuthentication.Encrypt(ticket);
-                var cookie = new HttpCookie(FormsAuthentication.FormsCookieName, encryptedTicket);
-                Response.Cookies.Add(cookie);
-                //Authenticaion
-
-                //GlobalVariable.UserID = member.ID;
-                if ( !member.Name.Equals("admin")) {    //member.ID !=1  
-                   
-                    return  RedirectToAction("Index", "Infors");  //不是admit
-                }
-
+                return RedirectToAction("Index", "Members");
             }
-            
-            
-            return RedirectToAction("Index","Members");
+            else {
+                ViewBag.errorMsg = "wrong name or password";
+               
+            }
+            return View();
+
 
         }
-
+        [Authorize]
+        [ValidateAntiForgeryToken]
+        [HttpPost]
         public ActionResult Logout()
         {
+            //登出
+            accountService.Logout(User.Identity.Name.ToString());
             //Authentitcation
             FormsAuthentication.SignOut();
             Session.RemoveAll();
+            // 建立一個同名的 Cookie 來覆蓋原本的 Cookie
             HttpCookie cookie = new HttpCookie(FormsAuthentication.FormsCookieName, "");
             cookie.Expires = DateTime.Now.AddYears(-1);
             Response.Cookies.Add(cookie);
+
+            // 建立 ASP.NET 的 Session Cookie 同樣是為了覆蓋
+            HttpCookie cookie2 = new HttpCookie("ASP.NET_SessionId", "");
+            cookie2.Expires = DateTime.Now.AddYears(-1);
+            Response.Cookies.Add(cookie2);
             //Authentication
-            GlobalVariable.UserID = 0;
+            
+            
             return RedirectToAction("Login", "Home");
         }
 

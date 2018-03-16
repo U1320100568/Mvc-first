@@ -1,0 +1,26 @@
+﻿@using Information.Helpers
+
+@if (!Request.IsAuthenticated)
+{
+<ul class="nav navbar-nav navbar-right">
+    <li>@Html.ActionLink("登入", "Login", "Home")</li>
+</ul>
+}
+else
+{
+    using (Html.BeginForm("Logout","Home",FormMethod.Post,new { id = "logoutForm", @class = "navbar-right" }))
+    {
+        @Html.AntiForgeryToken()
+        <ul class="nav navbar-nav navbar-right" >
+            @if (WebSiteHelper.UserName.Equals("admin"))
+            {   
+            <li>@Html.ActionLink("會員", "Index", "Members")</li>
+            <li>@Html.ActionLink("會員功能管理", "Index", "Features")</li>
+            }
+
+            
+            <li><a href="javascript:document.getElementById('logoutForm').submit()">登出</a></li>
+        </ul>
+    }
+
+}

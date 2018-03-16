@@ -10,6 +10,8 @@
 
     @if (User.IsInRole("admin"))
     {@Html.ActionLink("Create New", "Create")}
+    @Html.ActionLink("Download", "Export", "Excel", new { id = 2 }, new {@class = "pull-right" } )
+
 </p>
 <table class="table">
     <tr>
@@ -17,13 +19,13 @@
             @Html.DisplayNameFor(model => model.Title)
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.publisher)
+            @Html.DisplayNameFor(model => model.Publisher)
         </th>
         <th>
             @Html.DisplayNameFor(model => model.ReleaseTime)
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.content)
+            @Html.DisplayNameFor(model => model.Content)
         </th>
         <th></th>
     </tr>
@@ -35,18 +37,18 @@
                 @Html.DisplayFor(modelItem => item.Title)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.publisher)
+                @Html.DisplayFor(modelItem => item.Publisher)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.ReleaseTime)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.content)
+                @Html.DisplayFor(modelItem => item.Content)
             </td>
             <td>
 
 
-               
+
                 @if (User.IsInRole("admin"))
                 {
                     @Html.ActionLink("Edit", "Edit", new { id = item.ID }) @: |
