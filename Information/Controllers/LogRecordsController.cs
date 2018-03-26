@@ -25,6 +25,9 @@ namespace Information.Controllers
         [UserAuthorize]
         public ActionResult Index()
         {
+            ExportService<LogRecord> exportService = new ExportService<LogRecord>();
+            ViewBag.ExportColumns = exportService.GetSelectList();
+
             string user = WebSiteHelper.UserName;
             ViewBag.Title = user;
             if(user == "admin")
@@ -34,6 +37,7 @@ namespace Information.Controllers
             }
 
             
+
             int memberId = memberRepo.Get(m => m.Name == user).ID;
             return View(logRecRepo.GetAll().Where(r => r.MemberId == memberId).ToList());
         }

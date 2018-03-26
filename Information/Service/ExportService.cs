@@ -3,10 +3,14 @@ using Information.Models;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Web;
+using System.Web.Mvc;
 
 namespace Information.Service
 {
@@ -15,126 +19,51 @@ namespace Information.Service
     {
        
 
-        public MemoryStream Export(string className)
+        public MemoryStream Export(List<string> removeColumns)//
         {
             //建立工作簿
             IWorkbook workbook = new XSSFWorkbook();
-
+            
+            string className = typeof(TEntity).Name;
             ISheet sheet = workbook.CreateSheet(className);
-
+            
             //建立列
             IRow tempIRow = sheet.CreateRow(0);
             //取得要處理的第一列
             tempIRow = sheet.GetRow(0);
-            
-           
+
+
             //每個迴圈都要產生一個資料列
-            switch (className)
+            int i = 1, j = 0;//i: row, j: column
+            
+            Dictionary<string, string> tableHead = EntityPropertyName();
+            foreach (var item in tableHead)
             {
-                
-                case "Member":
-                    CrudRepository<Member> memberRepo = new CrudRepository<Member>();
-                    ICollection<Member> m_List = memberRepo.GetAll().ToList();
-
-                    sheet.GetRow(0).CreateCell(0).SetCellValue("索引鍵");
-                    sheet.GetRow(0).CreateCell(1).SetCellValue("帳號");
-                    sheet.GetRow(0).CreateCell(2).SetCellValue("密碼");
-                    int i = 1;
-                    foreach (Member item in m_List)
-                    {
-                        sheet.CreateRow(i);
-                        sheet.GetRow(i).CreateCell(0).SetCellValue(item.ID );
-                        sheet.GetRow(i).CreateCell(1).SetCellValue(item.Name);
-                        sheet.GetRow(i).CreateCell(2).SetCellValue(item.Password);
-                        i++;
-                    }
-                    break;
-
-                case "Infor":
-                    CrudRepository<Infor> inforRepo = new CrudRepository<Infor>();
-                    ICollection<Infor> f_List = inforRepo.GetAll().ToList();
-
-                    sheet.GetRow(0).CreateCell(0).SetCellValue("索引鍵");
-                    sheet.GetRow(0).CreateCell(1).SetCellValue("發布人");
-                    sheet.GetRow(0).CreateCell(2).SetCellValue("時間");
-                    sheet.GetRow(0).CreateCell(3).SetCellValue("內容");
-                    i = 1;
-                    foreach (Infor item in f_List)
-                    {
-                        sheet.CreateRow(i);
-                        sheet.GetRow(i).CreateCell(0).SetCellValue(item.ID);
-                        sheet.GetRow(i).CreateCell(1).SetCellValue(item.Publisher);
-                        sheet.GetRow(i).CreateCell(2).SetCellValue(item.ReleaseTime.ToString());
-                        sheet.GetRow(i).CreateCell(3).SetCellValue(item.Content);
-                        i++;
-                    }
-                    break;
-
-                case "LogRecord":
-                    CrudRepository<LogRecord> logRecRepo = new CrudRepository<LogRecord>();
-                    ICollection<LogRecord> l_List = logRecRepo.GetAll().ToList();
-
-                    sheet.GetRow(0).CreateCell(0).SetCellValue("索引鍵");
-                    sheet.GetRow(0).CreateCell(1).SetCellValue("會員");
-                    sheet.GetRow(0).CreateCell(2).SetCellValue("登入時間");
-                    sheet.GetRow(0).CreateCell(3).SetCellValue("登出時間");
-                    i = 1;
-                    foreach (LogRecord item in l_List)
-                    {
-                        sheet.CreateRow(i);
-                        sheet.GetRow(i).CreateCell(0).SetCellValue(item.ID);
-                        sheet.GetRow(i).CreateCell(1).SetCellValue(WebSiteHelper.GetUserNameById(item.MemberId));
-                        sheet.GetRow(i).CreateCell(2).SetCellValue(item.LoginTime.ToString());
-                        sheet.GetRow(i).CreateCell(3).SetCellValue(item.LogoutTime.ToString());
-                        i++;
-                    }
-                    break;
-
-                case "Feature":
-                    CrudRepository<Feature> featureRepo = new CrudRepository<Feature>();
-                    ICollection<Feature> f_list = featureRepo.GetAll().ToList();
-
-                    sheet.GetRow(0).CreateCell(0).SetCellValue("索引鍵");
-                    sheet.GetRow(0).CreateCell(1).SetCellValue("會員");
-                    sheet.GetRow(0).CreateCell(2).SetCellValue("公告功能");
-                    sheet.GetRow(0).CreateCell(3).SetCellValue("登入紀錄功能");
-                    i = 1;
-                    foreach (Feature item in f_list)
-                    {
-                        sheet.CreateRow(i);
-                        sheet.GetRow(i).CreateCell(0).SetCellValue(item.ID);
-                        sheet.GetRow(i).CreateCell(1).SetCellValue(WebSiteHelper.GetUserNameById(item.MemberId));
-                        sheet.GetRow(i).CreateCell(2).SetCellValue(item.FeatInfor);
-                        sheet.GetRow(i).CreateCell(3).SetCellValue(item.FeatLogRec);
-                        i++;
-                    }
-                    break;
-
-                default:
-                    break;
+                if (!removeColumns.Exists(r => r == item.Key)) { continue; }
+                sheet.GetRow(0).CreateCell(j).SetCellValue(item.Value);  //輸出表頭
+                j++;
             }
+
+            CrudRepository<TEntity> repository = new CrudRepository<TEntity>();
+            var tableContent = repository.GetAll(); //資料庫提取資料
+
+            foreach (var row in tableContent)
+            {
+                j = 0;
+                sheet.CreateRow(i);
+                IEnumerable props = row.GetType().GetProperties();
                 
+                foreach (PropertyInfo prop in props)       //取出屬性個數
+                {
+                    if (!removeColumns.Exists(r => r == prop.Name)) { continue; }
+                    sheet.GetRow(i).CreateCell(j).SetCellValue(prop.GetValue(row).ToString());  //輸出內容，使用Reflection.PropertyInfo
+                    j++;
+                }
+                i++;
+            }
+           
             
             
-            
-            /*
-            FileStream fs = new FileStream(Path.Combine(@"C:/Users/roy.lai/Downloads/", "output.xlsx"), FileMode.Create, FileAccess.Write);
-            workbook.Write(fs);
-            fs.Close();
-            */
-            /*
-            MemoryStream MS = new MemoryStream();
-            workbook.Write(MS);
-            System.Web.HttpContext.Current.Response.Clear();
-            System.Web.HttpContext.Current.Response.AddHeader("conntent-disposition", "attachment;filename = Output.xlsx");
-            System.Web.HttpContext.Current.Response.ContentType = "application/vnd.openxmlformats-officedocument.speadsheetml.sheet";
-            System.Web.HttpContext.Current.Response.BinaryWrite(MS.ToArray());
-            workbook = null;
-            MS.Close();
-            MS.Dispose();
-            System.Web.HttpContext.Current.Response.Flush();
-            System.Web.HttpContext.Current.Response.End();
-            */
             MemoryStream MS = new MemoryStream();
             workbook.Write(MS);
             MS.Close();
@@ -142,5 +71,40 @@ namespace Information.Service
             return MS;
 
         }
+
+        
+
+        //取出屬性名稱對照的中文
+        public Dictionary<string,string> EntityPropertyName()
+        {
+            Type t = typeof(TEntity);
+
+            Dictionary<string,string> listTableName = new Dictionary<string,string>();
+            foreach (var pro in t.GetProperties())
+            {
+                var proKeyName = ExportDataHelper.CustomerExportColumns()
+                    .FirstOrDefault(p => p.Key == pro.Name);
+                listTableName.Add(proKeyName.Key,proKeyName.Value);
+                
+            }
+            
+
+            return listTableName;
+        }
+
+        public List<SelectListItem> GetSelectList()
+        {
+            List<SelectListItem> selectList = EntityPropertyName()
+                                                .Select(column => new SelectListItem()
+                                                {
+                                                    Value = column.Key,
+                                                    Text = column.Value,
+                                                    Selected = true
+                                                })
+                                                .ToList();
+            return selectList;
+        }
+
+
     }
 }

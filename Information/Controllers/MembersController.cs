@@ -18,12 +18,14 @@ namespace Information.Controllers
     {
         private CrudRepository<Member> memberRepo= new CrudRepository<Member>();
         private AccountService accountService = new AccountService();
+        
 
         // GET: Members
         [UserAuthorize]
         public ActionResult Index()
         {
-            
+            ExportService<Member> exportService = new ExportService<Member>();
+            ViewBag.ExportColumns = exportService.GetSelectList();
             return View(memberRepo.GetAll().ToList());
             
         }

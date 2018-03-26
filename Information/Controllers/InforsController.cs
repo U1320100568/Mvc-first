@@ -22,7 +22,8 @@ namespace Information.Controllers
         [UserAuthorize]
         public ActionResult Index()
         {
-            
+            ExportService<Infor> exportService = new ExportService<Infor>();
+            ViewBag.ExportColumns = exportService.GetSelectList();
             return View(inforRepo.GetAll().ToList());
         }
 

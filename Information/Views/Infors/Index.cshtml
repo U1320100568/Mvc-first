@@ -10,7 +10,7 @@
 
     @if (User.IsInRole("admin"))
     {@Html.ActionLink("Create New", "Create")}
-    @Html.ActionLink("Download", "Export", "Excel", new { id = 2 }, new {@class = "pull-right" } )
+    <button type="button" id="ButtonExport" name="ButtonExport" data-classname="Infor" class="pull-right btn btn-link ">Download</button>
 
 </p>
 <table class="table">
@@ -69,6 +69,9 @@
 
 @*@if (ViewBag.guest == "1") {@Html.ActionLink("登出", "Logout", "Home")}*@
 
-@section Scripts{
-    @Scripts.Render("~/bundles/jqueryval");
-} 
+
+<!-- ExportData Dialog -->
+@**@@Html.Partial("_ExportDataDialog")
+<!-- ExportData Dialog -->
+@section scripts{
+    <script src="~/Scripts/Customer-Export.js"></script> }

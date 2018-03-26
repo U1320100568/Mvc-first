@@ -3,8 +3,7 @@
 
 
 <h2>會員功能管理</h2>
-<p> @Html.ActionLink("Download", "Export", "Excel", new { id = 4 }, new { @class = "pull-right" })</p>
-
+<button type="button" id="ButtonExport" name="ButtonExport" data-classname="Feature" class="pull-right btn btn-link ">Download</button>
 <table class="table">
 
 
@@ -46,3 +45,10 @@
 
 
 </table>
+
+
+<!-- ExportData Dialog -->
+@**@@Html.Partial("_ExportDataDialog")
+<!-- ExportData Dialog -->
+@section scripts{
+    <script src="~/Scripts/Customer-Export.js"></script> }

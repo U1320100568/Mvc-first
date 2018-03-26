@@ -15,17 +15,17 @@ namespace Information.Models
         public int ID { get; set; }
         //public int PowerID { get; set; }
 
-        [Required]
-        [StringLength(12)]
-        [DataType(DataType.Password)]
-        public string Password { get; set; }
+        
 
         [Required]
         [StringLength(20)]
         [Column(TypeName = "varchar")]
         public string Name { get; set; }
 
-        
+        [Required]
+        [StringLength(12)]
+        [DataType(DataType.Password)]
+        public string Password { get; set; }
     }
     
     

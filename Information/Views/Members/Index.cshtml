@@ -9,7 +9,8 @@
 
 <p>
     @Html.ActionLink("Create New", "Create")
-    @Html.ActionLink("Download", "Export", "Excel", new { id = 1 }, new { @class = "pull-right" })
+    
+    <button type="button" id ="ButtonExport" name= "ButtonExport" data-classname="Member" class="pull-right btn btn-link ">Download</button>
 </p>
 
 <table class="table">
@@ -17,7 +18,7 @@
         <th>
             @Html.DisplayNameFor(model => model.ID)
         </th>
-        
+
         <th>
             @Html.DisplayNameFor(model => model.Password)
         </th>
@@ -33,7 +34,7 @@
             <td>
                 @Html.DisplayFor(modelItem => item.ID)
             </td>
-            
+
             <td>
                 @Html.DisplayFor(modelItem => item.Password)
             </td>
@@ -50,4 +51,9 @@
 
 </table>
 
-@*@if (ViewBag.guest == "1"){@Html.ActionLink("登出", "Logout", "Home")}*@
+
+<!-- ExportData Dialog -->
+@**@@Html.Partial("_ExportDataDialog")
+<!-- ExportData Dialog -->
+@section scripts{
+    <script src="~/Scripts/Customer-Export.js"></script> }

@@ -53,9 +53,10 @@ namespace Information.Controllers
             if (member != null)
             {
                 //Authenticaion
-                Response.Cookies.Add(WebSiteHelper.Authentication(member));
+                WebSiteHelper.Authentication(member);
                 //Authenticaion
-                
+
+               
                
                 if (!member.Name.Equals("admin"))
                 {   
@@ -63,6 +64,7 @@ namespace Information.Controllers
                     string controllerName = WebSiteHelper.GetFeature(member.Name).GetFirstAccessFeature();
                     if(controllerName != null)
                     {
+                        
                         return RedirectToAction("Index", controllerName);
                     }
                     else

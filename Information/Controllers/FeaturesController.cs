@@ -20,6 +20,8 @@ namespace Information.Controllers
         [UserAuthorize]
         public ActionResult Index()
         {
+            ExportService<Feature> exportService = new ExportService<Feature>();
+            ViewBag.ExportColumns = exportService.GetSelectList();
             return View(featRepo.GetAll().ToList());
         }
 

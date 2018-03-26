@@ -4,17 +4,17 @@
 
 <h2>@ViewBag.Title 的登入紀錄</h2>
 
-<p> @Html.ActionLink("Download", "Export", "Excel", new { id = 3}, new { @class = "pull-right" })</p>
+<p> <button type="button" id="ButtonExport" name="ButtonExport" data-classname="LogRecord" class="pull-right btn btn-link ">Download</button></p>
 <table class="table">
 
     <tr>
         @if (User.IsInRole("admin"))
         {
-        <th>
-            @Html.DisplayNameFor(model => model.MemberId)
-        </th>
+            <th>
+                @Html.DisplayNameFor(model => model.MemberId)
+            </th>
         }
-        
+
         <th>
             @Html.DisplayNameFor(model => model.LoginTime)
         </th>
@@ -23,42 +23,48 @@
         </th>
         <th></th>
     </tr>
-@{ 
-    var last = Model.Last();
-    foreach (var item in Model)
-    {
-        <tr>
-            @if (User.IsInRole("admin"))    
-            {
-            <td>
-                @WebSiteHelper.GetUserNameById(item.MemberId)
-            </td>
-            }
-
-            <td>
-                @Html.DisplayFor(modelItem => item.LoginTime)
-            </td>
-            <td>
-                @*@if (item.LoginTime == item.LogoutTime) {  @:X}else{}*@
-                @if (item.Equals(last))
-                { 
-                    @:未登出 
-                }
-                else
-                { 
-                    @Html.DisplayFor(modelItem => item.LogoutTime)
-                }
-            </td>
-            <td>
+    @{
+        var last = Model.Last();
+        foreach (var item in Model)
+        {
+            <tr>
                 @if (User.IsInRole("admin"))
                 {
-                    @Html.ActionLink("Delete", "Delete", new { id = item.ID })  @: |
+                    <td>
+                        @WebSiteHelper.GetUserNameById(item.MemberId)
+                    </td>
                 }
-                
-                @Html.ActionLink("Details", "Details", new { id = item.ID })
 
-            </td>
-        </tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.LoginTime)
+                </td>
+                <td>
+                    @*@if (item.LoginTime == item.LogoutTime) {  @:X}else{}*@
+                    @if (item.Equals(last))
+                    {
+                        @:未登出
+                    }
+                    else
+                    {
+                        @Html.DisplayFor(modelItem => item.LogoutTime)
+                    }
+                </td>
+                <td>
+                    @if (User.IsInRole("admin"))
+                    {
+                        @Html.ActionLink("Delete", "Delete", new { id = item.ID }) @: |
+                    }
+
+                    @Html.ActionLink("Details", "Details", new { id = item.ID })
+
+                </td>
+            </tr>
+        }
     }
-}
 </table>
+
+<!-- ExportData Dialog -->
+@**@@Html.Partial("_ExportDataDialog")
+<!-- ExportData Dialog -->
+@section scripts{
+    <script src="~/Scripts/Customer-Export.js"></script> }

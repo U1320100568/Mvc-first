@@ -1,0 +1,47 @@
+﻿<div id="ExportDataDialog" class="modal fade" tabindex="-1" data-width="400px" data-height="500px" style="display:none">    <!---->
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h4 id="ExportDataDialog">匯出資料</h4>
+            </div>
+            <div class="modal-body" style="margin-left: 5px">
+                <div class="row">
+                    <div class="form-group">
+                        <div class="col-lg-12">
+                            <label>
+                                <strong>匯出資料</strong>
+                                (<a id="SelectAllColumns" style="cursor: pointer;">
+                                    <span class="glyphicon glyphicon-ok-sign"></span>選取全部
+                                </a>
+                                <a id="UnselectAllColumns" style="cursor: pointer;">
+                                    <span class="glyphicon glyphicon-remove-sign"></span>取消全選
+                                </a> )
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="well">
+                            @foreach (var item in (List<SelectListItem>)ViewBag.ExportColumns)
+                    {
+                        <div class="form-group">
+                            <label class="checkbox">
+                                <input type="checkbox" id="CheckBox_ExportColumns" name="CheckBox_ExportColumns" value="@(item.Value)" checked="checked" />
+                                @(item.Text)
+                            </label>
+                        </div>
+            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="ButtonExecuteExport"  data-url="@Url.Action("Export")" class="btn btn-primary">匯出資料</button>
+                <button id="buttonCancel" class="btn" data-dismiss="modal" aria-hidden="true">取消</button>
+            </div>
+        </div>
+    </div>
+</div>
+

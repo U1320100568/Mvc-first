@@ -88,6 +88,8 @@ namespace Information.Helpers
                 );
             var encryptedTicket = FormsAuthentication.Encrypt(ticket);
             var cookie = new HttpCookie(FormsAuthentication.FormsCookieName, encryptedTicket);
+            HttpContext.Current.Response.Cookies.Add(cookie);
+
             return cookie;
         }
     }
