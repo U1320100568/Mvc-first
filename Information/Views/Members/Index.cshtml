@@ -1,5 +1,5 @@
 ﻿@model IEnumerable<Information.Models.Member>
-
+@using Information.Helpers
 @{
     ViewBag.Title = "成員";
 }
@@ -46,7 +46,16 @@
                 @Html.ActionLink("Details", "Details", new { id = item.ID }) |
                 @Html.ActionLink("Delete", "Delete", new { id = item.ID })
             </td>
-        </tr>
+            <td>
+                @if (WebSiteHelper.GetUserNameById(item.ID) !="admin") { 
+                    using (Html.BeginForm("ResetPassword", "Members", FormMethod.Post)) {
+                        @Html.AntiForgeryToken()
+                        @Html.Hidden("id",item.ID)
+                        <input type="submit" name="resetPassword" value="還原預設密碼" class="btn-link" onclick="alert('已修改完成')"/>
+                    }
+                }
+            </td >
+        </tr >
     }
 
 </table>

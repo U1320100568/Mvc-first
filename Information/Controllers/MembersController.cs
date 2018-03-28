@@ -95,6 +95,21 @@ namespace Information.Controllers
             }
             return View(member);
         }
+        
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [UserAuthorize]
+        public ActionResult ResetPassword(int? id)
+        {
+            Member member = memberRepo.Get(m => m.ID == id);
+            if (member == null)
+            {
+                return HttpNotFound();
+            }
+            string queryString = "ResetPassword" + " " + id;
+            memberRepo.SqlQuery(queryString);
+            return RedirectToAction("Index");
+        }
 
         // GET: Members/Delete/5
         [UserAuthorize]

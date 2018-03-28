@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
+using System.Reflection;
 using System.Web;
 using System.Web.Mvc;
 
@@ -48,10 +49,37 @@ namespace Information.Controllers
             if(ModelState.IsValid)
             {
                 featRepo.Update(feature);
-                return View("Index", featRepo.GetAll().ToList());
+                return RedirectToAction("Index");
             }
             
             return View(feature);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [UserAuthorize]
+        public ActionResult AllDisable(int? id)
+        {
+            if (id == null)
+            {
+                throw new ArgumentNullException("id");
+            }
+            
+            Feature feature = featRepo.Get(f => f.ID == id);
+            if (feature == null)
+            {
+                return HttpNotFound();
+            }
+            feature.FeatInfor = false;
+            feature.FeatLogRec = false;
+           
+            List<string> updatedProps = new List<string>();
+            updatedProps.Add("FeatInfor");
+            updatedProps.Add("FeatLogRec");
+
+            featRepo.UpdateBySql(feature, updatedProps);
+           
+;            return RedirectToAction("Index");
         }
 
         [UserAuthorize]

@@ -1,7 +1,6 @@
 ﻿@model IEnumerable<Information.Models.Feature>
 @using Information.Helpers
 
-
 <h2>會員功能管理</h2>
 <button type="button" id="ButtonExport" name="ButtonExport" data-classname="Feature" class="pull-right btn btn-link ">Download</button>
 <table class="table">
@@ -17,6 +16,7 @@
         <th>
             @Html.DisplayNameFor(model => model.FeatLogRec)
         </th>
+        <th> </th>
         <th> </th>
     </tr>
 
@@ -40,15 +40,26 @@
             <td>
                 @Html.ActionLink("Edit", "Edit", new { id = item.ID })
             </td>
+            <td>
+                @if (WebSiteHelper.GetUserNameById(item.MemberId)!="admin")
+                { 
+                    using (Html.BeginForm("AllDisable", "Features", FormMethod.Post))
+                    {
+                        @Html.AntiForgeryToken()
+                        @Html.Hidden("id", item.ID)
+                        <input type="submit" name="DisableBtn" value="禁止此帳戶" class="btn-link " onclick="alert('已禁止此帳號') ">
+                    }
+                }
+            </td>
         </tr>
     }
 
 
 </table>
 
-
 <!-- ExportData Dialog -->
 @**@@Html.Partial("_ExportDataDialog")
 <!-- ExportData Dialog -->
 @section scripts{
-    <script src="~/Scripts/Customer-Export.js"></script> }
+    <script src="~/Scripts/Customer-Export.js"></script>
+}
