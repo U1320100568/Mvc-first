@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.Entity.Core.Objects;
 using System.Data.Entity.Infrastructure;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -65,23 +66,26 @@ namespace Information.Service
             }
         }
 
+        //用SQL Commeamd更新資料欄位 (可複選)
         public void UpdateBySql(TEntity entity, List<string> updatedProps)
         {
             Type t = typeof(TEntity);
 
             string tableName = GetTableName(DataBaseType.MS_SQL_SERVER);
+            List<string> paras = new List<string>();
 
-            string queryString = "UPDATE " + "[dbo].[Features]" + " SET ";
-
+            string queryString = "UPDATE " + tableName + " SET ";
+            int index = 0;
             foreach (var updatedProp in updatedProps)
             {
                 PropertyInfo prop = t.GetProperty(updatedProp);
-                queryString += prop.Name + " = '" + prop.GetValue(entity) + "'";
+                queryString += prop.Name + " = "+string.Format("@{0}",index++);//'" + prop.GetValue(entity) + "'
                 if (updatedProp != updatedProps.Last()) { queryString += " , "; }
+                paras.Add(prop.GetValue(entity).ToString()); //將要更新的變數存到list
             }
             queryString += " WHERE ID = " + t.GetProperty("ID").GetValue(entity);
 
-            SqlQuery(queryString);
+            SqlQuery(queryString, paras);
         }
 
         public void Delete(TEntity entity)
@@ -97,9 +101,27 @@ namespace Information.Service
             }
         }
 
-        public void SqlQuery(string queryString )
+        //將 SqlCommand 參數化
+        public void SqlQuery(string queryString ,List<string> paraList)
+        {   
+            //建立SqlParameter物件
+            List<SqlParameter> paras = new List<SqlParameter>();
+            SqlParameter para;
+            int index = 0;
+            foreach (var item in paraList) {
+                var paraName = string.Format("@{0}", index++);
+                para= new SqlParameter(paraName, item);
+                paras.Add(para);
+            }
+            //執行 SQL Command
+            Db.Database.ExecuteSqlCommand(queryString,paras.ToArray());
+        }
+
+        //測試SQL Injection
+        public TEntity SqlQueryTest(string queryString)
         {
-            Db.Database.ExecuteSqlCommand(queryString);
+            var result = Db.Set<TEntity>().SqlQuery(queryString).FirstOrDefault();
+            return result;
         }
         
 
@@ -114,6 +136,7 @@ namespace Information.Service
             return Db.Set<TEntity>().AsQueryable();
         }
 
+        //取得該類別的Table Name
         public string GetTableName(DataBaseType dbType = DataBaseType.MS_SQL_SERVER) {
             ObjectContext objectContext = ((IObjectContextAdapter)Db).ObjectContext;
             ObjectSet<TEntity> objectSet = objectContext.CreateObjectSet<TEntity>();

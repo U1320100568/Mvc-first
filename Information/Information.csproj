@@ -178,6 +178,7 @@
     <Compile Include="Controllers\InforsController.cs" />
     <Compile Include="Controllers\LogRecordsController.cs" />
     <Compile Include="Controllers\MembersController.cs" />
+    <Compile Include="Controllers\PropertiInfo.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>

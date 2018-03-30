@@ -106,8 +106,9 @@ namespace Information.Controllers
             {
                 return HttpNotFound();
             }
-            string queryString = "ResetPassword" + " " + id;
-            memberRepo.SqlQuery(queryString);
+            string queryString = "ResetPassword" + " @0";
+            memberRepo.SqlQuery(queryString,new List<string>() { id.ToString()});
+            
             return RedirectToAction("Index");
         }
 

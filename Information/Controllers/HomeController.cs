@@ -83,9 +83,8 @@ namespace Information.Controllers
 
 
         }
-        [Authorize]
-        [ValidateAntiForgeryToken]
-        [HttpPost]
+        
+        
         public ActionResult Logout()
         {
             //登出
